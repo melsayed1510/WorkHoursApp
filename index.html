@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>حاسبة وقت الانصراف | Work Time Calculator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: linear-gradient(135deg, #00c6ff, #0072ff);
+      color: #fff;
+      height: 100vh;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      direction: rtl;
+      transition: all 0.3s ease;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-width: 470px;
+      padding: 16px;
+    }
+
+    h1 {
+      margin-bottom: 25px;
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    /* قائمة اللغة */
+    .lang-select {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      background: rgba(255,255,255,0.9);
+      border: none;
+      border-radius: 8px;
+      padding: 8px 36px 8px 12px;
+      font-family: 'Cairo', sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      outline: none;
+      color: #003344;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='12' viewBox='0 0 24 24' width='12' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 12px;
+    }
+
+    body.rtl .lang-select {
+      background-position: left 10px center;
+      padding-left: 36px;
+      padding-right: 12px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 30px 28px;
+      border-radius: 20px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+      width: 100%;
+      backdrop-filter: blur(6px);
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      transition: all 0.3s ease;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 6px;
+      font-weight: 700;
+      text-align: right;
+      transition: all 0.3s ease;
+    }
+
+    input[type="time"],
+    input.duration-input {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      text-align: center;
+      outline: none;
+      background: rgba(255, 255, 255, 0.95);
+      color: #003344;
+      font-family: 'Cairo', sans-serif;
+      font-weight: 600;
+      appearance: none;
+      direction: ltr;
+      letter-spacing: 1px;
+      transition: all 0.3s ease;
+    }
+
+    button {
+      margin-top: 18px;
+      background-color: #00ffcc;
+      color: #003344;
+      border: none;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      width: 100%;
+      font-weight: 700;
+      font-family: 'Cairo', sans-serif;
+    }
+
+    button:hover {
+      background-color: #00e6b8;
+      transform: translateY(-1px);
+    }
+
+    .result-card {
+      margin-top: 18px;
+      padding: 14px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 800;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s ease;
+      min-height: 1.5em;
+      white-space: normal;
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    .result-card.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .result-card.rtl {
+      direction: rtl;
+    }
+
+    .result-card.ltr {
+      direction: ltr;
+    }
+
+    body.ltr {
+      direction: ltr;
+      text-align: left;
+    }
+
+    body.ltr label {
+      text-align: left;
+    }
+
+    .error {
+      color: #ffdfdf;
+      font-weight: 700;
+    }
+
+    .end-time {
+      color: #f3ff5c;
+      font-weight: 900;
+    }
+
+  </style>
+</head>
+<body>
+  <select id="langSelect" class="lang-select">
+    <option value="ar">العربية</option>
+    <option value="en">English</option>
+  </select>
+
+  <div class="container">
+    <h1 id="title">⏰ حاسبة الدوام</h1>
+    <div class="card">
+      <label for="startTime" id="lblStart">وقت الدخول:</label>
+      <input type="time" id="startTime" value="07:00">
+
+      <label for="workDuration" id="lblDuration">عدد ساعات العمل :</label>
+      <input type="text" id="workDuration" class="duration-input" value="06:30" inputmode="numeric" maxlength="5">
+
+      <button id="calcBtn">احسب الوقت</button>
+      <div class="result-card" id="result"></div>
+    </div>
+  </div>
+
+ <script>
+  const btn = document.getElementById('calcBtn');
+  const resultEl = document.getElementById('result');
+  const durInput = document.getElementById('workDuration');
+  const langSelect = document.getElementById('langSelect');
+
+  const texts = {
+    ar: {
+      dir: 'rtl',
+      title: '⏰ حاسبة الدوام',
+      lblStart: 'وقت الدخول:',
+      lblDuration: 'عدد ساعات العمل :',
+      btn: 'احسب الوقت',
+      error: '⚠️ الرجاء إدخال وقت الدخول والمدة.',
+      presence: '🕒 <b>بصمة التواجد</b>',
+      end: '🕒 <b>بصمة الانصراف:</b>',
+      after: 'بعد الساعة',
+      before: 'وقبل الساعة',
+      nextDay: '(اليوم التالي)',
+      am: 'ص',
+      pm: 'م'
+    },
+    en: {
+      dir: 'ltr',
+      title: '⏰ Work Time Calculator',
+      lblStart: 'Start Time:',
+      lblDuration: 'Work Duration (HH:MM):',
+      btn: 'Calculate',
+      error: '⚠️ Please enter both start time and duration.',
+      presence: '🕒 <b>Presence Check</b>',
+      end: '🕒 <b>End Time:</b>',
+      after: 'After',
+      before: 'Before',
+      nextDay: '(Next Day)',
+      am: 'AM',
+      pm: 'PM'
+    }
+  };
+
+  function applyLanguage(lang) {
+    const t = texts[lang];
+    document.documentElement.lang = lang;
+    document.body.dir = t.dir;
+    document.body.className = t.dir;
+
+    document.getElementById('title').innerHTML = t.title;
+    document.getElementById('lblStart').innerHTML = t.lblStart;
+    document.getElementById('lblDuration').innerHTML = t.lblDuration;
+    btn.innerHTML = t.btn;
+
+    resultEl.innerHTML = '';
+    resultEl.classList.remove('show', 'error', 'ltr', 'rtl');
+  }
+
+  langSelect.addEventListener('change', () => applyLanguage(langSelect.value));
+  applyLanguage(langSelect.value);
+
+  durInput.addEventListener('input', e => {
+    let v = e.target.value.replace(/[^\d]/g, '');
+    if (v.length > 2) v = v.slice(0, 2) + ':' + v.slice(2, 4);
+    e.target.value = v;
+  });
+
+  durInput.addEventListener('blur', e => {
+    let v = e.target.value.replace(/[^\d:]/g, '');
+    if (!v) return;
+    if (/^\d{1,2}$/.test(v)) v = v.padStart(2, '0') + ':00';
+    if (/^\d{3,4}$/.test(v)) v = v.slice(0, -2).padStart(2, '0') + ':' + v.slice(-2);
+    const [h, m] = v.split(':').map(n => Math.min(parseInt(n) || 0, n === m ? 59 : 23));
+    e.target.value = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+  });
+
+  function format12h(date, lang) {
+    const t = texts[lang];
+    let h = date.getHours();
+    const m = date.getMinutes();
+    const period = h >= 12 ? t.pm : t.am;
+    h = h % 12 || 12;
+    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')} ${period}`;
+  }
+
+  btn.addEventListener('click', () => {
+    const lang = langSelect.value;
+    const t = texts[lang];
+
+    const start = document.getElementById('startTime').value;
+    const dur = durInput.value;
+
+    if (!start || !dur) {
+      resultEl.textContent = t.error;
+      resultEl.classList.add('show', 'error');
+      return;
+    }
+
+    const [sh, sm] = start.split(':').map(Number);
+    const [dh, dm] = dur.split(':').map(Number);
+
+    const startDate = new Date();
+    startDate.setHours(sh, sm, 0, 0);
+
+    const endDate = new Date(startDate.getTime() + (dh * 60 + dm) * 60000);
+    const nextDay = endDate.getDate() !== startDate.getDate();
+
+    const checkInStart = new Date(startDate.getTime() + 2 * 3600000);
+    const checkInEnd = new Date(checkInStart.getTime() + 3600000);
+
+    resultEl.innerHTML = `
+      ${t.presence}<br>
+      ${t.after} : ${format12h(checkInStart, lang)}<br>
+      ${t.before} : ${format12h(checkInEnd, lang)}
+      <br><br>
+      <span class="end-time">${t.end} ${format12h(endDate, lang)}</span>
+      ${nextDay ? t.nextDay : ''}
+    `;
+
+    resultEl.classList.add('show', lang === 'en' ? 'ltr' : 'rtl');
+  });
+</script>
+</body>
+</html>
