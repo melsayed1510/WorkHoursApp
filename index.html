@@ -38,7 +38,6 @@
       font-weight: 700;
     }
 
-    /* قائمة اللغة */
     .lang-select {
       position: absolute;
       top: 15px;
@@ -53,8 +52,6 @@
       outline: none;
       color: #003344;
       appearance: none;
-      -webkit-appearance: none;
-      -moz-appearance: none;
       background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='12' viewBox='0 0 24 24' width='12' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
       background-repeat: no-repeat;
       background-position: right 10px center;
@@ -71,8 +68,8 @@
       background: rgba(255, 255, 255, 0.15);
       padding: 30px 28px;
       border-radius: 20px;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
       width: 100%;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
       backdrop-filter: blur(6px);
       display: flex;
       flex-direction: column;
@@ -116,10 +113,10 @@
       border-radius: 10px;
       font-size: 17px;
       cursor: pointer;
-      transition: all 0.25s ease;
       width: 100%;
       font-weight: 700;
       font-family: 'Cairo', sans-serif;
+      transition: all 0.25s ease;
     }
 
     button:hover {
@@ -149,33 +146,36 @@
       transform: translateY(0);
     }
 
-    .result-card.rtl {
-      direction: rtl;
+    body.ltr { direction: ltr; text-align: left; }
+    body.ltr label { text-align: left; }
+
+    .end-time { color: #f3ff5c; font-weight: 900; }
+    .error { color: #ffdfdf; font-weight: 700; }
+
+    /* Footer */
+    .footer {
+      position: fixed;
+      bottom: 8px;
+      width: 100%;
+      text-align: center;
+      font-size: 0.82rem;
+      color: #ffffff;
+      opacity: 0.9;
+      padding: 4px 0;
     }
 
-    .result-card.ltr {
-      direction: ltr;
+    .footer .links { margin-top: 4px; }
+
+    .footer .icon {
+      width: 20px;
+      height: 20px;
+      margin: 0 6px;
+      filter: invert(90%);
+      cursor: pointer;
+      transition: transform 0.2s ease;
     }
 
-    body.ltr {
-      direction: ltr;
-      text-align: left;
-    }
-
-    body.ltr label {
-      text-align: left;
-    }
-
-    .error {
-      color: #ffdfdf;
-      font-weight: 700;
-    }
-
-    .end-time {
-      color: #f3ff5c;
-      font-weight: 900;
-    }
-
+    .footer .icon:hover { transform: scale(1.15); }
   </style>
 </head>
 <body>
@@ -198,7 +198,21 @@
     </div>
   </div>
 
- <script>
+  <!-- Footer -->
+  <footer class="footer" id="footer">
+    <span id="footerText">تم التصميم والتطوير بواسطة </span>
+    <strong>Mohamed Elsayed</strong>
+    <div class="links">
+      <a href="https://www.instagram.com/m.elsayed1510/" target="_blank">
+        <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/instagram.svg" class="icon">
+      </a>
+      <a href="https://www.facebook.com/mohamed.elsayed.mtwaly/" target="_blank">
+        <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/facebook.svg" class="icon">
+      </a>
+    </div>
+  </footer>
+
+<script>
   const btn = document.getElementById('calcBtn');
   const resultEl = document.getElementById('result');
   const durInput = document.getElementById('workDuration');
@@ -218,7 +232,8 @@
       before: 'وقبل الساعة',
       nextDay: '(اليوم التالي)',
       am: 'ص',
-      pm: 'م'
+      pm: 'م',
+      footer: 'تم التصميم والتطوير بواسطة '
     },
     en: {
       dir: 'ltr',
@@ -233,7 +248,8 @@
       before: 'Before',
       nextDay: '(Next Day)',
       am: 'AM',
-      pm: 'PM'
+      pm: 'PM',
+      footer: 'Designed & Developed by '
     }
   };
 
@@ -247,6 +263,7 @@
     document.getElementById('lblStart').innerHTML = t.lblStart;
     document.getElementById('lblDuration').innerHTML = t.lblDuration;
     btn.innerHTML = t.btn;
+    document.getElementById('footerText').textContent = t.footer;
 
     resultEl.innerHTML = '';
     resultEl.classList.remove('show', 'error', 'ltr', 'rtl');
