@@ -200,7 +200,8 @@
       late: '⏱️ تأخير:',
       nextDay: '(اليوم التالي)',
       am: 'ص',
-      pm: 'م'
+      pm: 'م',
+      footer: 'تم التصميم والتطوير بواسطة '
     },
     en: {
       dir: 'ltr',
@@ -215,7 +216,8 @@
       late: '⏱️ Late:',
       nextDay: '(Next Day)',
       am: 'AM',
-      pm: 'PM'
+      pm: 'PM',
+      footer: 'Designed & Developed by '   
     }
   };
 
@@ -232,6 +234,8 @@
     document.querySelectorAll('label')[0].innerHTML = LANG.start;
     document.querySelectorAll('label')[1].innerHTML = LANG.duration;
     btn.innerHTML = LANG.calc;
+
+    document.querySelector('.footer span').innerHTML = LANG.footer;
 
     resultEl.innerHTML = '';
     resultEl.classList.remove('show');
